@@ -16,7 +16,7 @@ function CardiffMap() {
         latitude: 51.501,
         zoom: 13
       }}
-      style={{ width: '100%', height: '100vh' }}
+      style={{ width: '95%', height: '100vh' }}
       mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
     >
       <Source
