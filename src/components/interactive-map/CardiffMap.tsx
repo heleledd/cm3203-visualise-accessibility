@@ -1,29 +1,56 @@
-import { useEffect, useRef } from 'react';
-import Map, { Source, Layer } from 'react-map-gl/maplibre';
-import { Protocol } from 'pmtiles';
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import Map, { Source, Layer, Popup } from 'react-map-gl/maplibre';
+import type { MapLayerMouseEvent, MapGeoJSONFeature } from 'react-map-gl/maplibre';
+import { useState } from 'react';
 
-// Register PMTiles protocol once when the app loads
-const protocol = new Protocol();
-maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
+interface SelectedFeature {
+  longitude: number;
+  latitude: number;
+  properties: {
+    nearest_hospital?: number;
+    // add any other properties from your PMTiles data here
+  };
+}
 
 function CardiffMap() {
+  const [selectedFeature, setSelectedFeature] = useState<SelectedFeature | null>(null);
+
+  const handleClick = (e: MapLayerMouseEvent) => {
+    const features = e.features;
+    if (!features || features.length === 0) {
+      setSelectedFeature(null);
+      return;
+    }
+
+    setSelectedFeature({
+      longitude: e.lngLat.lng,
+      latitude: e.lngLat.lat,
+      properties: features[0].properties
+    });
+  };
+
   return (
     <Map
-      initialViewState={{
-        longitude: -3.175,
-        latitude: 51.501,
-        zoom: 13
-      }}
+      initialViewState={{ longitude: -3.175, latitude: 51.501, zoom: 13 }}
       style={{ width: '95%', height: '100vh' }}
       mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+      onClick={handleClick}
+      interactiveLayerIds={['hospital-distance']}
     >
-      <Source
-        id="cardiff"
-        type="vector"
-        url="pmtiles://output.pmtiles"
-      >
+      {selectedFeature && (
+        <Popup
+          longitude={selectedFeature.longitude}
+          latitude={selectedFeature.latitude}
+          onClose={() => setSelectedFeature(null)}
+          closeOnClick={false}
+        >
+          <div>
+            <h3>Cell Stats</h3>
+            <p>Nearest hospital: {selectedFeature.properties.nearest_hospital}m</p>
+          </div>
+        </Popup>
+      )}
+
+      <Source id="cardiff" type="vector" url="pmtiles://output.pmtiles">
         <Layer
           id="hospital-distance"
           type="fill"
@@ -37,16 +64,6 @@ function CardiffMap() {
               1500, '#ef4444'
             ],
             'fill-opacity': 0.7
-          }}
-        />
-        <Layer
-          id="hospital-distance-outline"
-          type="line"
-          source-layer="gp_grid_distance__wgs84"
-          paint={{
-            'line-color': '#ffffff',
-            'line-width': 0.5,
-            'line-opacity': 0.3
           }}
         />
       </Source>
