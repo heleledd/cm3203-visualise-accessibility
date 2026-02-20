@@ -4,12 +4,16 @@ import LikertSlider from './LikertSlider.tsx'
 interface AmenityPanelProps {
     showStreetNetwork: boolean
     setShowStreetNetwork: (value: boolean) => void
+    showGrid: boolean
+    setShowGrid: (value: boolean) => void
 }
 
 export default function AmenityPanel(
     {
         showStreetNetwork, 
-        setShowStreetNetwork
+        setShowStreetNetwork,
+        showGrid,
+        setShowGrid
     }: AmenityPanelProps) 
     {
     const [weights, setWeights] = useState({
@@ -41,6 +45,7 @@ export default function AmenityPanel(
             <div className="map-options-container">
                 <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />
                 <label htmlFor="vehicle1">Show GP practices</label><br />
+                
                 <input 
                     type="checkbox" 
                     id="streetNetwork" 
@@ -48,6 +53,14 @@ export default function AmenityPanel(
                     onChange={(e) => setShowStreetNetwork(e.target.checked)}
                 />
                 <label htmlFor="streetNetwork">Show street network</label><br />
+
+                <input 
+                    type="checkbox" 
+                    id="grid" 
+                    checked={showGrid}
+                    onChange={(e) => setShowGrid(e.target.checked)}
+                />
+                <label htmlFor="grid">Show grid</label><br />
             </div>
         </div>
     )

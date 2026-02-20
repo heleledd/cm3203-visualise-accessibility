@@ -8,6 +8,7 @@ import '../styles/app.css'
 
 function App() {
   const [showStreetNetwork, setShowStreetNetwork] = useState(false)
+  const [showGrid, setShowGrid] = useState(false)
   
   return (
     <>
@@ -15,10 +16,13 @@ function App() {
         <div className="display-container">
             <CardiffMap 
               showStreetNetwork={showStreetNetwork}
+              showGrid={showGrid}
             />
             <AmenityPanel 
               showStreetNetwork={showStreetNetwork} 
-              setShowStreetNetwork={setShowStreetNetwork} 
+              setShowStreetNetwork={setShowStreetNetwork}
+              showGrid={showGrid}
+              setShowGrid={setShowGrid}
             />
         </div>
         <Footer />

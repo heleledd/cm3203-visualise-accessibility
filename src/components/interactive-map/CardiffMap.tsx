@@ -1,5 +1,5 @@
 import Map, { Source, Layer, Popup } from 'react-map-gl/maplibre';
-import type { MapLayerMouseEvent, MapGeoJSONFeature } from 'react-map-gl/maplibre';
+import type { MapLayerMouseEvent, MapGeoJSONFeature, LayerProps } from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import { Protocol } from 'pmtiles';
 import { useState } from 'react';
@@ -14,16 +14,30 @@ interface SelectedFeature {
 }
 
 interface CardiffMapProps {
-    showStreetNetwork: boolean
+    showStreetNetwork: boolean,
+    showGrid: boolean
 }
 
+// make it understand how to read .pmtiles files
+const protocol = new Protocol();
+maplibregl.addProtocol('pmtiles', protocol.tile);
+
+
 export default function CardiffMap(
-  {showStreetNetwork}: CardiffMapProps
+  {showStreetNetwork, showGrid}: CardiffMapProps
 ) {
   const [selectedFeature, setSelectedFeature] = useState<SelectedFeature | null>(null);
 
-  const protocol = new Protocol();
-  maplibregl.addProtocol('pmtiles', protocol.tile);
+  const roadLayer : LayerProps= {
+    id: 'roads',
+    type: 'line',
+    source: 'edges',
+    paint: {
+      'line-color': '#7cf9d6',
+      'line-width': 1
+    }
+  };
+
 
   const handleClick = (e: MapLayerMouseEvent) => {
     const features = e.features;
@@ -60,8 +74,12 @@ export default function CardiffMap(
           </div>
         </Popup>
       )}
-
-      <Source id="cardiff" type="vector" url="pmtiles://output.pmtiles">
+      
+      {showStreetNetwork && (<Source id="edges" type="geojson" data="/edges.geojson">
+        <Layer {...roadLayer} />
+      </Source>)}
+      
+      {showGrid && (<Source id="cardiff" type="vector" url="pmtiles:///output.pmtiles">
         <Layer
           id="hospital-distance"
           type="fill"
@@ -77,7 +95,7 @@ export default function CardiffMap(
             'fill-opacity': 0.7
           }}
         />
-      </Source>
+      </Source>)}
     </Map>
   );
 }
