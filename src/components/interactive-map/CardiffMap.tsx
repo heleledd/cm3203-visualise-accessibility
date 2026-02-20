@@ -1,5 +1,7 @@
 import Map, { Source, Layer, Popup } from 'react-map-gl/maplibre';
 import type { MapLayerMouseEvent, MapGeoJSONFeature } from 'react-map-gl/maplibre';
+import maplibregl from 'maplibre-gl';
+import { Protocol } from 'pmtiles';
 import { useState } from 'react';
 
 interface SelectedFeature {
@@ -11,8 +13,17 @@ interface SelectedFeature {
   };
 }
 
-function CardiffMap() {
+interface CardiffMapProps {
+    showStreetNetwork: boolean
+}
+
+export default function CardiffMap(
+  {showStreetNetwork}: CardiffMapProps
+) {
   const [selectedFeature, setSelectedFeature] = useState<SelectedFeature | null>(null);
+
+  const protocol = new Protocol();
+  maplibregl.addProtocol('pmtiles', protocol.tile);
 
   const handleClick = (e: MapLayerMouseEvent) => {
     const features = e.features;
@@ -70,5 +81,3 @@ function CardiffMap() {
     </Map>
   );
 }
-
-export default CardiffMap;
