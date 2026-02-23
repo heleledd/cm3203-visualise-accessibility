@@ -14,8 +14,7 @@ interface SelectedFeature {
 }
 
 interface CardiffMapProps {
-    showStreetNetwork: boolean,
-    showGrid: boolean
+  mapLayers: { showStreetNetwork: boolean; showGrid: boolean; showGP: boolean }
 }
 
 // make it understand how to read .pmtiles files
@@ -24,7 +23,7 @@ maplibregl.addProtocol('pmtiles', protocol.tile);
 
 
 export default function CardiffMap(
-  {showStreetNetwork, showGrid}: CardiffMapProps
+  {mapLayers}: CardiffMapProps
 ) {
   const [selectedFeature, setSelectedFeature] = useState<SelectedFeature | null>(null);
 
@@ -75,11 +74,11 @@ export default function CardiffMap(
         </Popup>
       )}
       
-      {showStreetNetwork && (<Source id="edges" type="geojson" data="/edges.geojson">
+      {mapLayers.showStreetNetwork && (<Source id="edges" type="geojson" data="/edges.geojson">
         <Layer {...roadLayer} />
       </Source>)}
       
-      {showGrid && (<Source id="cardiff" type="vector" url="pmtiles:///output.pmtiles">
+      {mapLayers.showGrid && (<Source id="cardiff" type="vector" url="pmtiles:///output.pmtiles">
         <Layer
           id="hospital-distance"
           type="fill"

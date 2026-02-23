@@ -7,22 +7,26 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import '../styles/app.css'
 
 function App() {
-  const [showStreetNetwork, setShowStreetNetwork] = useState(false)
-  const [showGrid, setShowGrid] = useState(false)
+  const [mapLayers, setMapLayers] = useState({
+    showStreetNetwork: false,
+    showGrid: false,
+    showGP: false,
+  })
+
+  const toggleLayer = (layer: keyof typeof mapLayers) =>
+    setMapLayers(prev => ({ ...prev, [layer]: !prev[layer] }))
   
   return (
     <>
         <Header />
         <div className="display-container">
             <CardiffMap 
-              showStreetNetwork={showStreetNetwork}
-              showGrid={showGrid}
+              mapLayers={mapLayers}
             />
             <AmenityPanel 
-              showStreetNetwork={showStreetNetwork} 
-              setShowStreetNetwork={setShowStreetNetwork}
-              showGrid={showGrid}
-              setShowGrid={setShowGrid}
+              mapLayers={mapLayers}
+              toggleLayer={toggleLayer}
+
             />
         </div>
         <Footer />

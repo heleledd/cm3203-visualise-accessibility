@@ -2,25 +2,28 @@ import { useState } from 'react'
 import LikertSlider from './LikertSlider.tsx'
 
 interface AmenityPanelProps {
-    showStreetNetwork: boolean
-    setShowStreetNetwork: (value: boolean) => void
-    showGrid: boolean
-    setShowGrid: (value: boolean) => void
+  mapLayers: { showStreetNetwork: boolean; showGrid: boolean; showGP: boolean }
+  toggleLayer: (layer: keyof AmenityPanelProps['mapLayers']) => void
 }
 
 export default function AmenityPanel(
     {
-        showStreetNetwork, 
-        setShowStreetNetwork,
-        showGrid,
-        setShowGrid
+        mapLayers,
+        toggleLayer
     }: AmenityPanelProps) 
+    
     {
-    const [weights, setWeights] = useState({
-        hospital: 3,
-        school: 3,
-        park: 3
+        const [weights, setWeights] = useState({
+            hospital: 3,
+            school: 3,
+            park: 3
     })
+
+    const LAYER_LABELS: Record<keyof typeof mapLayers, string> = {
+        showStreetNetwork: 'Show street network',
+        showGrid: 'Show grid',
+        showGP: 'Show GP practices',
+        }
 
     return (
         <div className="amenity-panel-container">
@@ -43,24 +46,17 @@ export default function AmenityPanel(
                 />
             </div>
             <div className="map-options-container">
-                <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />
-                <label htmlFor="vehicle1">Show GP practices</label><br />
-                
-                <input 
-                    type="checkbox" 
-                    id="streetNetwork" 
-                    checked={showStreetNetwork}
-                    onChange={(e) => setShowStreetNetwork(e.target.checked)}
-                />
-                <label htmlFor="streetNetwork">Show street network</label><br />
-
-                <input 
-                    type="checkbox" 
-                    id="grid" 
-                    checked={showGrid}
-                    onChange={(e) => setShowGrid(e.target.checked)}
-                />
-                <label htmlFor="grid">Show grid</label><br />
+                {(Object.keys(mapLayers) as Array<keyof typeof mapLayers>).map(key => (
+                    <div key={key}>
+                        <input
+                        type="checkbox"
+                        id={key}
+                        checked={mapLayers[key]}
+                        onChange={() => toggleLayer(key)}
+                        />
+                        <label htmlFor={key}>{LAYER_LABELS[key]}</label>
+                    </div>
+                ))}
             </div>
         </div>
     )
